@@ -20,7 +20,7 @@ jobs:
         with:
           ruby-version: '3.0'
       - name: Install Linguist
-        run: gem install linguist
+        run: gem install github-linguist
       - name: Run Linguist
         run: linguist .
 
