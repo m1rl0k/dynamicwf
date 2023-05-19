@@ -23,11 +23,13 @@ jobs:
       - name: Install Linguist
         run: gem install github-linguist
       - name: Run Linguist
-        run: ruby -e "require 'github-linguist'; puts Linguist::Repository.new('.', false).languages"
-
+        run: |
+          cd $GITHUB_WORKSPACE
+          linguist .
 
       - name: Determine Language and Run SAST Tool
         run: |
+        
           cd $GITHUB_WORKSPACE
           LANGUAGE=$(linguist --breakdown | head -n1 | awk '{print $1}')
           echo "Detected language: $LANGUAGE"
