@@ -25,7 +25,7 @@ jobs:
         run: gem install github-linguist
       - name: Run Linguist
         run: ruby -e "require 'github-linguist'; puts Linguist::Repository.new('.', false).languages"
-In this corrected version, the indentation for each step is aligned properly, and the mapping 
+
 
       - name: Determine Language and Run SAST Tool
         run: |
