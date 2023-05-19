@@ -1,14 +1,12 @@
 name: SAST
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - master
   pull_request:
     branches:
       - master
-
 
 jobs:
   sast_scan:
@@ -17,18 +15,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6
       
-      - name: Install Linguist
-        run: gem install github-linguist
-        
+      - name: Install Bundler
+        run: gem install bundler
+
+      - name: Create Gemfile
+        run: echo -e "source 'https://rubygems.org'\n\ngem 'github-linguist'" > Gemfile
+
+      - name: Bundle Install
+        run: bundle install --jobs 4 --retry 3
+      
       - name: Determine Language and Run SAST Tool
         run: |
           cd $GITHUB_WORKSPACE
-          LANGUAGE=$(linguist --breakdown | head -n1 | awk '{print $1}')
+          LANGUAGE=$(bundle exec linguist --breakdown | head -n1 | awk '{print $1}')
           echo "Detected language: $LANGUAGE"
           case "$LANGUAGE" in
           "Python")
