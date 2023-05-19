@@ -1,3 +1,4 @@
+
 name: SAST
 
 on:
@@ -21,20 +22,16 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6
-      
-      - name: Install Bundler
-        run: gem install bundler
 
-      - name: Create Gemfile
-        run: echo -e "source 'https://rubygems.org'\n\ngem 'github-linguist'" > Gemfile
+      - name: Install Linguist
+        run: |
+          sudo gem install github-linguist
+          echo "PATH=$(ruby -e 'puts Gem.user_dir')/bin:$PATH" >> $GITHUB_ENV
 
-      - name: Bundle Install
-        run: bundle install --jobs 4 --retry 3
-      
       - name: Determine Language and Run SAST Tool
         run: |
           cd $GITHUB_WORKSPACE
-          LANGUAGE=$(bundle exec linguist --breakdown | head -n1 | awk '{print $1}')
+          LANGUAGE=$(linguist --breakdown | head -n1 | awk '{print $1}')
           echo "Detected language: $LANGUAGE"
           case "$LANGUAGE" in
           "Python")
@@ -82,3 +79,4 @@ jobs:
             exit 1
             ;;
           esac
+
