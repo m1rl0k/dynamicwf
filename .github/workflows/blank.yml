@@ -1,0 +1,74 @@
+name: SAST
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  sast_scan:
+    name: SAST Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Github Linguist
+        id: linguist
+        uses: jieyu/github-linguist-action@v1.0.0
+        with:
+          files: '*'
+      
+      - name: Determine Language and Run SAST Tool
+        run: |
+          LANGUAGE=${{ steps.linguist.outputs.language }}
+          echo "Detected language: $LANGUAGE"
+          case "$LANGUAGE" in
+          "Python")
+            echo "Setting up Python and installing Bandit for Python..."
+            sudo apt-get update && sudo apt-get install -y python3.8 python3-pip
+            pip3 install bandit
+            echo "Running Bandit..."
+            bandit -r .
+            ;;
+          "JavaScript")
+            echo "Setting up Node.js and installing ESLint for JavaScript..."
+            curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            npm install eslint
+            echo "Running ESLint..."
+            eslint .
+            ;;
+          "C#")
+            echo "Setting up .NET and installing .NET Security Analyzer for C#..."
+            wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+            sudo dpkg -i packages-microsoft-prod.deb
+            sudo apt-get update
+            sudo apt-get install -y apt-transport-https
+            sudo apt-get update
+            sudo apt-get install -y dotnet-sdk-3.1
+            dotnet tool install --global DevSkim
+            echo "Running .NET Security Analyzer..."
+            dotnet devskim analyze .
+            ;;
+          "Terraform")
+            echo "Installing Terrascan for Terraform..."
+            curl https://raw.githubusercontent.com/accurics/terrascan/release/v1.3.1/install.sh | sh
+            echo "Running Terrascan..."
+            terrascan scan -d .
+            ;;
+          "C++")
+            echo "Installing Flawfinder for C++..."
+            sudo apt-get update
+            sudo apt-get install flawfinder
+            echo "Running Flawfinder..."
+            flawfinder .
+            ;;
+          *)
+            echo "Language not supported for SAST"
+            exit 1
+            ;;
+          esac
