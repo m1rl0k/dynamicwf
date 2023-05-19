@@ -26,8 +26,7 @@ jobs:
       - name: Install Linguist
         run: |
           sudo gem install github-linguist
-          echo "PATH=$(ruby -e 'puts Gem.user_dir')/bin:$PATH" >> $GITHUB_ENV
-
+          echo 'LINGUIST_PATH=$(gem which github-linguist | sed -e "s/.rb$/\/..\/exe\/github-linguist/")' >> $GITHUB_ENV
       - name: Determine Language and Run SAST Tool
         run: |
           cd $GITHUB_WORKSPACE
