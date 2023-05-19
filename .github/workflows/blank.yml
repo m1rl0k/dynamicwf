@@ -23,11 +23,11 @@ jobs:
         with:
           ruby-version: 2.6
           
-      - name: linguist
+      - name: Install Linguist
         run: |
-
           sudo gem install github-linguist
-          echo 'LINGUIST_PATH=$(dirname $(gem which github-linguist))' >> $GITHUB_ENV
+          echo 'GEM_BIN=$(ruby -r rubygems -e "puts Gem.bindir")' >> $GITHUB_ENV
+          echo 'PATH=${GEM_BIN}:${PATH}' >> $GITHUB_ENV
 
       - name: Determine Language and Run SAST Tool
         run: |
