@@ -15,19 +15,14 @@ jobs:
     name: SAST Scan
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6
-          
+          ruby-version: '3.0'
       - name: Install Linguist
-        run: |
-          sudo gem install github-linguist
-          echo 'GEM_BIN=$(ruby -r rubygems -e "puts Gem.bindir")' >> $GITHUB_ENV
-          echo 'PATH=${GEM_BIN}:${PATH}' >> $GITHUB_ENV
+        run: gem install linguist
+      - name: Run Linguist
+        run: linguist .
 
       - name: Determine Language and Run SAST Tool
         run: |
