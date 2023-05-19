@@ -19,12 +19,13 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
-      - name: Install and Run Linguist
+      - name: Install Linguist
+        run: gem install github-linguist
+
+      - name: Run Linguist
         run: |
-           echo -e "source 'https://rubygems.org'\ngem 'github-linguist'" > Gemfile
-           gem install bundler
-           bundle install
-           bundle exec linguist .
+            linguist_path=$(gem which github-linguist | sed 's/.rb$/\/..\/exe\/github-linguist/')
+            $linguist_path .
     
       - name: Determine Language and Run SAST Tool
         run: |
