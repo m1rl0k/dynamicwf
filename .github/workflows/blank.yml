@@ -22,7 +22,9 @@ jobs:
       - name: Install Linguist
         run: gem install github-linguist
       - name: Run Linguist
-        run: linguist .
+        run: |
+          export PATH="$PATH:$(ruby -e 'puts Gem.bindir')"
+          linguist .
 
       - name: Determine Language and Run SAST Tool
         run: |
